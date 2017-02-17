@@ -14,69 +14,73 @@
  * limitations under the License.
  */
 
-var Cloudant = require('cloudant');
-var async = require('async');
+var request = require('request')
+var Cloudant = require('cloudant')
+
+var LOGO_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/512px-IBM_logo.svg.png"
+var CONTENT_TYPE = "image/png"
+var IMAGE_NAME_PREFIX = "IBM_logo"
+var IMAGE_NAME_POSTFIX= ".png"
 
 /**
- * This action writes new data to a cloudant database.
+ * This action downloads an IBM logo, and returns an object to be written to a cloudant database.
  * This action is idempotent. If it fails, it can be retried.
  *
- * @param   params._id                            The id of the record in the Cloudant 'processed' database
- * @param   params.CLOUDANT_USER                 Cloudant username
- * @param   params.CLOUDANT_PASS                 Cloudant password
- * @param   params.CLOUDANT_DATABASE             Cloudant database to write data to
- * @param   params.SENDGRID_API_KEY              Cloudant password
- * @return                                       Standard OpenWhisk success/error response
+ * @param   params.CLOUDANT_USER                   Cloudant username
+ * @param   params.CLOUDANT_PASS                   Cloudant password
+ * @param   params.CLOUDANT_DATABASE               Cloudant database to store the file to
+ 
+ * @return  Promise for the downloaded image object
  */
 function main(params) {
 
-  // Configure database connection
-  console.log(params);
-  var cloudant = new Cloudant({
-    account: params.CLOUDANT_USER,
-    password: params.CLOUDANT_PASS
-  });
+    // Configure database connection
+    var cloudant = new Cloudant({
+        account: params.CLOUDANT_USER,
+        password: params.CLOUDANT_PASS
+    });
+    var database = cloudant.db.use(params.CLOUDANT_DATABASE);
 
-  var cloudantDB = cloudant.db.use(params.CLOUDANT_DATABASE);
+    // Generate a random name to trigger the database change feed
+    var imageName = IMAGE_NAME_PREFIX + getRandomInt(1, 100000) + IMAGE_NAME_POSTFIX
 
-  if (!params.deleted) {
-
-    var dataToWrite = {};
-    dataToWrite._id = "12345";
-    dataToWrite.randomTextData = "asdfasdf";
-
-    // TODO don't need waterfall here
-    async.waterfall([
-
-        // Insert the check data into the cloudant database.
-        function(callback) {
-          console.log('[record-check-deposit.main] Updating the database');
-          cloudantDB.insert(dataToWrite, function(err, body, head) {
+    return new Promise(function(resolve, reject) {
+        request({
+            uri: LOGO_URL,
+            method: 'GET',
+        }, function(err, response, body) {
             if (err) {
-              console.log('[record-check-deposit.main] error: cloudantDB');
-              console.log(err);
-              return callback(err);
+                reject();
+
             } else {
-              console.log('[record-check-deposit.main] success: cloudantDB');
-              console.log(body);
-              return callback(null, dataToWrite);
+
+                database.multipart.insert({
+                        _id: imageName
+                    }, [{
+                        name: imageName,
+                        data: body,
+                        content_type: CONTENT_TYPE
+                    }],
+                    imageName,
+                    function(err, body) {
+                        if (err && err.statusCode != 409) {
+                            console.log("Error with original file insert.");
+                            reject();
+                        } else {
+                            console.log("Success with original file insert.");
+                            resolve();
+                        }
+                    }
+                );
+
             }
-          });
-        }
+        });
+    })
 
-      ],
+}
 
-      function(err, result) {
-        if (err) {
-          console.log("[KO]", err);
-        } else {
-          console.log("[OK]");
-        }
-        whisk.done(null, err);
-      }
-    );
-
-  }
-
-  return whisk.async();
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min;
 }
