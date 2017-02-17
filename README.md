@@ -1,32 +1,53 @@
-# Getting Started with OpenWhisk and Cloudant Data Processing
-This project provides sample code for creating your Message Hub (Kafka) data processing app with Apache OpenWhisk on IBM Bluemix. It should take no more than 10 minutes to get up and running. Once you complete this sample application, you can move on to more complex serverless application use cases.
+# OpenWhisk 101 - Cloudant Data Processing
+This project provides sample code for creating your Cloudant data processing app with Apache OpenWhisk on IBM Bluemix. It should take no more than 10 minutes to get up and running. Once you complete this sample application, you can move on to more complex serverless application use cases, such as those named _OpenWhisk 201_ or tagged as [_openwhisk-use-cases_](https://github.com/search?q=topic%3Aopenwhisk-use-cases+org%3AIBM&type=Repositories).
 
-# Overview diagram
-To come.
+# Overview of Cloudant data processing
+The sample demonstrates how to write an action that inserts data in to Cloudant and how to associate an action to respond to that insert event.
 
 # Installation
-You will need a Bluemix account to work with the IBM hosted instance of Apache OpenWhisk.
+Setting up this sample involves configuration of OpenWhisk and Cloudant on IBM Bluemix. [If you haven't already signed up for Bluemix and configured OpenWhisk, review those steps first](docs/OPENWHISK.md).
 
-## Sign up for a Bluemix account
-Begin by going to [bluemix.net](https://console.ng.bluemix.net/) and signing up for a free account. After you activate your account, set an organization (for example, user@example.com) and space (for example "dev"), click on OpenWhisk in the left navigation.
-![alt text](docs/openwhisk-nav.png)
+### Set up Cloudant
+Log into the Bluemix console, provision a Cloudant service instance, and name it `openwhisk-cloudant`. You can reuse an existing instance if you already have one.
 
-## Install, configure, and test the OpenWhisk CLI
-Once there, click the "Download OpenWhisk CLI" button.
-![alt text](docs/getting-started-with-openwhisk.png)
+Copy `template.local.env` to a new file named `local.env` and update the `CLOUDANT_INSTANCE` value to reflect the name of the Cloudant service instance above.
 
-Then, follow the three steps to install, configure, and test connectivity. Note that the authorization key is not shown here.
-![alt text](docs/openwhisk-cli.png)
+Then set the `CLOUDANT_USERNAME` and `CLOUDANT_PASSWORD` values based on the service credentials for the service.
 
-## Execute `wskdeploy` to deploy the sample
-Clone this repository to your system, and change to the root directory and install the app using the [`wskdeploy`](https://github.com/openwhisk/openwhisk-wskdeploy) tool, which uses a manifest to create the triggers, actions, and rules that power the sample.
+Log into the Cloudant web console and create a database, such as `cats`. Set the database name in the `CLOUDANT_DATABASE` variable.
+
+### Bind the Cloudant instance to OpenWhisk
+To make Cloudant available to OpenWhisk, we create a "package" along with connection information.
 
 ```bash
-./wskdeploy.sh
+wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
+  --param username "$CLOUDANT_USERNAME" \
+  --param password "$CLOUDANT_PASSWORD" \
+  --param host "$CLOUDANT_USERNAME.cloudant.com" \
+  --param dbname "$CLOUDANT_DATABASE"
 ```
 
-## Confirm that everything works
-The code should show you how Cloudant data processing with OpenWhisk works.
+### Use the `deploy.sh` script to automate the steps above
+The commands above exist in a convenience script that reads the environment variables out of `local.env` and injects them where needed.
 
-# Troubleshooting
+Change to the root directory, and install the app using `deploy.sh`.
+
+> **Note**: `deploy.sh` will be replaced with the [`wskdeploy`](https://github.com/openwhisk/openwhisk-wskdeploy) tool in the future. `wskdeploy` uses a manifest to create the triggers, actions, and rules that power the sample.
+
+```bash
+./deploy.sh --install
+```
+## Testing
+To come.
+
+## Troubleshooting
 The first place to check for errors is the OpenWhisk activation log. You can view it by tailing the log on the command line with `wsk activation poll` or you can view the [monitoring console on Bluemix](https://console.ng.bluemix.net/openwhisk/dashboard).
+
+## Cleaning up
+To remove all the API mappings and delete the actions, you can use `./deploy.sh --uninstall` or perform the deletions manually.
+
+# Credits
+Created by @jzaccone and @krook
+
+# License
+Licensed under the [Apache 2.0 license](LICENSE.txt).
