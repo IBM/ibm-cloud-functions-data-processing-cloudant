@@ -36,7 +36,7 @@ function install() {
   echo -e "${YELLOW}Installing OpenWhisk actions, triggers, and rules for check-deposit..."
 
   echo "Binding package"
-  wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
+  $WSK package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
   --param username "$CLOUDANT_USER" \
   --param password "$CLOUDANT_PASS" \
   --param host "$CLOUDANT_USER.cloudant.com"
@@ -47,15 +47,12 @@ function install() {
     --param dbname "$CLOUDANT_DATABASE"
 
   echo "Creating actions"
-  wsk action create write-to-cloudant actions/write-to-cloudant.js \
+  $WSK action create write-to-cloudant actions/write-to-cloudant.js \
   --param CLOUDANT_USER "$CLOUDANT_USER" \
   --param CLOUDANT_PASS "$CLOUDANT_PASS" \
   --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
 
-  $WSK action create write-from-cloudant actions/write-from-cloudant.js \
-  --param CLOUDANT_USER "$CLOUDANT_USER" \
-  --param CLOUDANT_PASS "$CLOUDANT_PASS" \
-  --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
+  $WSK action create write-from-cloudant actions/write-from-cloudant.js
 
   # The new approach for processing Cloudant database triggers.
   $WSK action create write-from-cloudant-sequence \
