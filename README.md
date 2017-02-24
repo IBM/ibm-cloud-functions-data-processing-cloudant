@@ -1,18 +1,22 @@
 # OpenWhisk 101 - Cloudant Data Processing
 This project provides sample code for creating your Cloudant data processing app with Apache OpenWhisk on IBM Bluemix. It should take no more than 10 minutes to get up and running. Once you complete this sample application, you can move on to more complex serverless application use cases, such as those named _OpenWhisk 201_ or tagged as [_openwhisk-use-cases_](https://github.com/search?q=topic%3Aopenwhisk-use-cases+org%3AIBM&type=Repositories).
 
+Serverless platforms like Apache OpenWhisk provide a runtime that scales automatically in response to demand, resulting in a better match between the cost of cloud resources consumed and business value gained. One of the key use cases for OpenWhisk is to execute logic in response to records inserted or updated in a database.
+
 # Overview of Cloudant data processing
-The sample demonstrates how to write an action that inserts data in to Cloudant and how to associate an action to respond to that insert event.
+The sample demonstrates how to write an action that inserts data in to Cloudant and how to create a second action to respond to that data insertion event.
+
+It also shows how to use built-in actions, such as those provided by the `/whisk.system/cloudant` package along with your custom actions in a _sequence_ to chain units of logic.
 
 # Installation
 Setting up this sample involves configuration of OpenWhisk and Cloudant on IBM Bluemix. [If you haven't already signed up for Bluemix and configured OpenWhisk, review those steps first](docs/OPENWHISK.md).
 
-### Set up Cloudant
+### Provision a Cloudant database
 Log into the Bluemix console, provision a Cloudant service instance, and name it `openwhisk-cloudant`. You can reuse an existing instance if you already have one.
 
 Copy `template.local.env` to a new file named `local.env` and update the `CLOUDANT_INSTANCE` value to reflect the name of the Cloudant service instance above.
 
-Then set the `CLOUDANT_USERNAME` and `CLOUDANT_PASSWORD` values based on the service credentials for the service.
+Then set the `CLOUDANT_USERNAMENAME` and `CLOUDANT_PASSWORDWORD` values based on the service credentials for the service.
 
 Log into the Cloudant web console and create a database, such as `cats`. Set the database name in the `CLOUDANT_DATABASE` variable.
 
@@ -21,9 +25,9 @@ To make Cloudant available to OpenWhisk, we create a "package" along with connec
 
 ```bash
 wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
-  --param username "$CLOUDANT_USERNAME" \
-  --param password "$CLOUDANT_PASSWORD" \
-  --param host "$CLOUDANT_USERNAME.cloudant.com" \
+  --param username "$CLOUDANT_USERNAMENAME" \
+  --param password "$CLOUDANT_PASSWORDWORD" \
+  --param host "$CLOUDANT_USERNAMENAME.cloudant.com" \
   --param dbname "$CLOUDANT_DATABASE"
 ```
 
@@ -38,16 +42,23 @@ Change to the root directory, and install the app using `deploy.sh`.
 ./deploy.sh --install
 ```
 ## Testing
-To come.
+To test, confirm that your Cloudant database is empty. Then invoke the first action manually.
+
+Open one terminal window to poll the logs:
+```bash
+wsk activation poll
+```
+
+And in a second terminal, invoke the action:
+```bash
+wsk action invoke --blocking --result write-to-cloudant
+```
 
 ## Troubleshooting
 The first place to check for errors is the OpenWhisk activation log. You can view it by tailing the log on the command line with `wsk activation poll` or you can view the [monitoring console on Bluemix](https://console.ng.bluemix.net/openwhisk/dashboard).
 
 ## Cleaning up
 To remove all the API mappings and delete the actions, you can use `./deploy.sh --uninstall` or perform the deletions manually.
-
-# Credits
-Created by @jzaccone and @krook
 
 # License
 Licensed under the [Apache 2.0 license](LICENSE.txt).
