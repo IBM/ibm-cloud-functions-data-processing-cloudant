@@ -1,5 +1,5 @@
 /**
- * Copyright 2016 IBM Corp. All Rights Reserved.
+ * Copyright 2017 IBM Corp. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,18 +26,18 @@ var IMAGE_NAME_POSTFIX= ".png"
  * This action downloads an IBM logo, and returns an object to be written to a cloudant database.
  * This action is idempotent. If it fails, it can be retried.
  *
- * @param   params.CLOUDANT_USER                   Cloudant username
- * @param   params.CLOUDANT_PASS                   Cloudant password
+ * @param   params.CLOUDANT_USERNAME               Cloudant username
+ * @param   params.CLOUDANT_PASSWORD               Cloudant password
  * @param   params.CLOUDANT_DATABASE               Cloudant database to store the file to
- 
+
  * @return  Promise for the downloaded image object
  */
 function main(params) {
 
     // Configure database connection
     var cloudant = new Cloudant({
-        account: params.CLOUDANT_USER,
-        password: params.CLOUDANT_PASS
+        account: params.CLOUDANT_USERNAME,
+        password: params.CLOUDANT_PASSWORD
     });
     var database = cloudant.db.use(params.CLOUDANT_DATABASE);
 

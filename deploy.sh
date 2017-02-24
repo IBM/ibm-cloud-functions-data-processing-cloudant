@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2016 IBM Corp. All Rights Reserved.
+# Copyright 2017 IBM Corp. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the “License”);
 # you may not use this file except in compliance with the License.
@@ -14,85 +14,72 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Color vars to be used in shell script output
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-GREEN='\033[0;32m'
-NC='\033[0m'
-
 # Load configuration variables
 source local.env
 
-# Capture the namespace where actions will be created
-WSK='wsk'
-CURRENT_NAMESPACE=`$WSK property get --namespace | sed -n -e 's/^whisk namespace//p' | tr -d '\t '`
-echo "Current namespace is $CURRENT_NAMESPACE."
-
 function usage() {
-  echo -e "${YELLOW}Usage: $0 [--install,--uninstall,--env]${NC}"
+  echo -e "Usage: $0 [--install,--uninstall,--env]"
 }
 
 function install() {
-  echo -e "${YELLOW}Installing OpenWhisk actions, triggers, and rules for check-deposit..."
+  echo -e "Installing OpenWhisk actions, triggers, and rules for Cloudant sample..."
 
   echo "Binding package"
-  $WSK package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
-  --param username "$CLOUDANT_USER" \
-  --param password "$CLOUDANT_PASS" \
-  --param host "$CLOUDANT_USER.cloudant.com"
+  wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
+    --param username "$CLOUDANT_USERNAME" \
+    --param password "$CLOUDANT_PASSWORD" \
+    --param host "$CLOUDANT_USERNAME.cloudant.com"
 
   echo "Creating triggers"
-  $WSK trigger create check-ready-to-echo \
-    --feed "/$CURRENT_NAMESPACE/$CLOUDANT_INSTANCE/changes" \
+  wsk trigger create image-ready-to-echo \
+    --feed "/_/$CLOUDANT_INSTANCE/changes" \
     --param dbname "$CLOUDANT_DATABASE"
 
   echo "Creating actions"
-  $WSK action create write-to-cloudant actions/write-to-cloudant.js \
-  --param CLOUDANT_USER "$CLOUDANT_USER" \
-  --param CLOUDANT_PASS "$CLOUDANT_PASS" \
-  --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
+  wsk action create write-to-cloudant actions/write-to-cloudant.js \
+    --param CLOUDANT_USERNAME "$CLOUDANT_USERNAME" \
+    --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
+    --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
 
-  $WSK action create write-from-cloudant actions/write-from-cloudant.js
+  wsk action create read-from-cloudant actions/read-from-cloudant.js
 
   # The new approach for processing Cloudant database triggers.
-  $WSK action create write-from-cloudant-sequence \
-    --sequence /$CURRENT_NAMESPACE/$CLOUDANT_INSTANCE/read,write-from-cloudant
+  wsk action create read-from-cloudant-sequence \
+    --sequence /_/$CLOUDANT_INSTANCE/read,read-from-cloudant
 
   echo "Enabling rules"
-  $WSK rule create echo-checks check-ready-to-echo write-from-cloudant-sequence
+  wsk rule create echo-images image-ready-to-echo read-from-cloudant-sequence
 
-  echo -e "${GREEN}Install Complete${NC}"
+  echo -e "Install Complete"
 }
 
 function uninstall() {
-  echo -e "${RED}Uninstalling..."
+  echo -e "Uninstalling..."
 
   echo "Removing rules..."
-  $WSK rule disable echo-checks
+  wsk rule disable echo-images
   sleep 1
-  $WSK rule delete echo-checks
+  wsk rule delete echo-images
 
   echo "Removing triggers..."
-  $WSK trigger delete check-ready-to-echo
+  wsk trigger delete image-ready-to-echo
 
   echo "Removing actions..."
-  $WSK action delete write-to-cloudant
-  $WSK action delete write-from-cloudant
-  $WSK action delete write-from-cloudant-sequence
+  wsk action delete write-to-cloudant
+  wsk action delete read-from-cloudant
+  wsk action delete read-from-cloudant-sequence
 
   echo "Removing packages..."
-  $WSK package delete "$CLOUDANT_INSTANCE"
+  wsk package delete "$CLOUDANT_INSTANCE"
 
-  echo -e "${GREEN}Uninstall Complete${NC}"
+  echo -e "Uninstall Complete"
 }
 
 function showenv() {
-  echo -e "${YELLOW}"
-  echo CLOUDANT_INSTANCE=$CLOUDANT_INSTANCE
-  echo CLOUDANT_USER=$CLOUDANT_USER
-  echo CLOUDANT_PASS=$CLOUDANT_PASS
-  echo CLOUDANT_DATABASE=$CLOUDANT_DATABASE
-  echo -e "${NC}"
+  echo CLOUDANT_INSTANCE="$CLOUDANT_INSTANCE"
+  echo CLOUDANT_USERNAME="$CLOUDANT_USERNAME"
+  echo CLOUDANT_PASSWORD="$CLOUDANT_PASSWORD"
+  echo CLOUDANT_DATABASE="$CLOUDANT_DATABASE"
 }
 
 case "$1" in
