@@ -22,39 +22,40 @@ function usage() {
 }
 
 function install() {
-  echo -e "Installing OpenWhisk actions, triggers, and rules for Cloudant sample..."
+  echo "Installing OpenWhisk actions, triggers, and rules for Cloudant sample..."
 
-  echo "Binding package"
+  echo "Binding Cloudant package with credential parameters"
   wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
     --param username "$CLOUDANT_USERNAME" \
     --param password "$CLOUDANT_PASSWORD" \
     --param host "$CLOUDANT_USERNAME.cloudant.com"
 
-  echo "Creating triggers"
-  wsk trigger create image-ready-to-echo \
+  echo "Creating trigger to fire events when data is inserted"
+  wsk trigger create image-uploaded \
     --feed "/_/$CLOUDANT_INSTANCE/changes" \
     --param dbname "$CLOUDANT_DATABASE"
 
-  echo "Creating actions"
+  echo "Creating action that is manually invoked to write to the database"
   wsk action create write-to-cloudant actions/write-to-cloudant.js \
     --param CLOUDANT_USERNAME "$CLOUDANT_USERNAME" \
     --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
     --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
 
-  wsk action create read-from-cloudant actions/read-from-cloudant.js
+  echo "Creating the action to respond to database insertions"
+  wsk action create write-from-cloudant actions/write-from-cloudant.js
 
-  # The new approach for processing Cloudant database triggers.
-  wsk action create read-from-cloudant-sequence \
-    --sequence /_/$CLOUDANT_INSTANCE/read,read-from-cloudant
+  echo "Creating the sequence that ties the database read to the handling action"
+  wsk action create write-from-cloudant-sequence \
+    --sequence /_/$CLOUDANT_INSTANCE/read,write-from-cloudant
 
-  echo "Enabling rules"
-  wsk rule create echo-images image-ready-to-echo read-from-cloudant-sequence
+  echo "Creating the rule that maps the database change trigger to the sequence"
+  wsk rule create echo-images image-uploaded write-from-cloudant-sequence
 
-  echo -e "Install Complete"
+  echo "Install complete"
 }
 
 function uninstall() {
-  echo -e "Uninstalling..."
+  echo "Uninstalling..."
 
   echo "Removing rules..."
   wsk rule disable echo-images
@@ -62,24 +63,24 @@ function uninstall() {
   wsk rule delete echo-images
 
   echo "Removing triggers..."
-  wsk trigger delete image-ready-to-echo
+  wsk trigger delete image-uploaded
 
   echo "Removing actions..."
   wsk action delete write-to-cloudant
-  wsk action delete read-from-cloudant
-  wsk action delete read-from-cloudant-sequence
+  wsk action delete write-from-cloudant
+  wsk action delete write-from-cloudant-sequence
 
   echo "Removing packages..."
   wsk package delete "$CLOUDANT_INSTANCE"
 
-  echo -e "Uninstall Complete"
+  echo "Uninstall complete"
 }
 
 function showenv() {
-  echo CLOUDANT_INSTANCE="$CLOUDANT_INSTANCE"
-  echo CLOUDANT_USERNAME="$CLOUDANT_USERNAME"
-  echo CLOUDANT_PASSWORD="$CLOUDANT_PASSWORD"
-  echo CLOUDANT_DATABASE="$CLOUDANT_DATABASE"
+  echo -e CLOUDANT_INSTANCE="$CLOUDANT_INSTANCE"
+  echo -e CLOUDANT_USERNAME="$CLOUDANT_USERNAME"
+  echo -e CLOUDANT_PASSWORD="$CLOUDANT_PASSWORD"
+  echo -e CLOUDANT_DATABASE="$CLOUDANT_DATABASE"
 }
 
 case "$1" in

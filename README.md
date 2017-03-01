@@ -14,6 +14,8 @@ The sample demonstrates how to write an action that inserts data in to Cloudant 
 
 It also shows how to use built-in actions, such as those provided by the `/whisk.system/cloudant` package along with your custom actions in a _sequence_ to chain units of logic.
 
+![High level diagram](docs/data-processing-cloudant.png)
+
 # Installation
 Setting up this sample involves configuration of OpenWhisk and Cloudant on IBM Bluemix. [If you haven't already signed up for Bluemix and configured OpenWhisk, review those steps first](docs/OPENWHISK.md).
 
