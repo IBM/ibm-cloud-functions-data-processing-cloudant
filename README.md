@@ -22,7 +22,7 @@ Log into the Bluemix console, provision a Cloudant service instance, and name it
 
 Copy `template.local.env` to a new file named `local.env` and update the `CLOUDANT_INSTANCE` value to reflect the name of the Cloudant service instance above.
 
-Then set the `CLOUDANT_USERNAMENAME` and `CLOUDANT_PASSWORDWORD` values based on the service credentials for the service.
+Then set the `CLOUDANT_USERNAME` and `CLOUDANT_PASSWORD` values based on the service credentials for the service.
 
 Log into the Cloudant web console and create a database, such as `cats`. Set the database name in the `CLOUDANT_DATABASE` variable.
 
@@ -31,9 +31,9 @@ To make Cloudant available to OpenWhisk, we create a "package" along with connec
 
 ```bash
 wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
-  --param username "$CLOUDANT_USERNAMENAME" \
-  --param password "$CLOUDANT_PASSWORDWORD" \
-  --param host "$CLOUDANT_USERNAMENAME.cloudant.com" \
+  --param username "$CLOUDANT_USERNAME" \
+  --param password "$CLOUDANT_PASSWORD" \
+  --param host "$CLOUDANT_USERNAME.cloudant.com" \
   --param dbname "$CLOUDANT_DATABASE"
 ```
 
