@@ -58,7 +58,7 @@ Use `deploy.sh` again to tear down the OpenWhisk actions, triggers, and rules. Y
 # 5. Recreate deployment manually
 This section provides a deeper look into what the `deploy.sh` script executes so that you understand how to work with OpenWhisk triggers, actions, rules, and packages in more detail.
 
-# 5.1 Bind Cloudant package with credential parameters
+## 5.1 Bind Cloudant package with credential parameters
 Make the Cloudant instance in Bluemix available as an event source.
 
 ```bash
@@ -68,7 +68,7 @@ wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
   --param host "$CLOUDANT_USERNAME.cloudant.com"
 ```
 
-# 5.2 Create trigger to fire events when data is inserted
+## 5.2 Create trigger to fire events when data is inserted
 Create a trigger named `image-uploaded` that subscribes to that Cloudant instance and specific database change events.
 
 ```bash
@@ -77,7 +77,7 @@ wsk trigger create image-uploaded \
   --param dbname "$CLOUDANT_DATABASE"
 ```
 
-# 5.3 Create action that is manually invoked to write to database
+## 5.3 Create action that is manually invoked to write to database
 Upload the action code named `write-to-cloudant` that inserts text and an image to Cloudant which will initiate a database change event.
 
 ```bash
@@ -87,14 +87,14 @@ wsk action create write-to-cloudant actions/write-to-cloudant.js \
   --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
 ```
 
-# 5.4 Create action to respond to database insertions
+## 5.4 Create action to respond to database insertions
 Upload the action code named `write-from-cloudant` that will receive database change information and log it to the console.
 
 ```bash
 wsk action create write-from-cloudant actions/write-from-cloudant.js
 ```
 
-# 5.5 Create sequence that ties database read to handling action
+## 5.5 Create sequence that ties database read to handling action
 Specify a linkage between the built-in Cloudant `read` action and the custom `write-from-cloudant` above in a sequence named `write-from-cloudant-sequence`.
 
 ```bash
@@ -102,7 +102,7 @@ wsk action create write-from-cloudant-sequence \
   --sequence /_/$CLOUDANT_INSTANCE/read,write-from-cloudant
 ```
 
-# 5.6 Create rule that maps database change trigger to sequence
+## 5.6 Create rule that maps database change trigger to sequence
 Declare a rule named `echo-images` that maps the trigger `image-uploaded` to the action sequence `write-from-cloudant-sequence`. Without this mapping, the trigger will fire but no logic will be executed in response.
 
 ```bash
