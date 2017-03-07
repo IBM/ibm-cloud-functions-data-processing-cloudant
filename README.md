@@ -1,60 +1,44 @@
 [![Build Status](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant.svg?branch=master)](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant)
 
 # OpenWhisk 101 - Cloudant Data Processing
-This project provides sample code for creating your Cloudant data processing app with Apache OpenWhisk on IBM Bluemix. It should take no more than 10 minutes to get up and running.
+Learn how to [create Cloudant data processing apps](https://github.com/IBM/openwhisk-data-processing-cloudant/wiki) with Apache OpenWhisk on IBM Bluemix. This tutorial will take less than 10 minutes to complete.
 
-This sample assumes you have a basic understanding of the OpenWhisk programming model, which is based on Triggers, Actions, and Rules. If not, you may want to [explore this demo first](https://github.com/IBM/openwhisk-action-trigger-rule).
+You should have a basic understanding of the OpenWhisk programming model. If not, [try the action, trigger, and rule demo first](https://github.com/IBM/openwhisk-action-trigger-rule). [You'll also need a Bluemix account and the latest OpenWhisk command line tool](docs/OPENWHISK.md).
 
-Serverless platforms like Apache OpenWhisk provide a runtime that scales automatically in response to demand, resulting in a better match between the cost of cloud resources consumed and business value gained.
+When complete, move on to more complex serverless applications, such as those named _OpenWhisk 201_ or tagged as [_openwhisk-use-cases_](https://github.com/search?q=topic%3Aopenwhisk-use-cases+org%3AIBM&type=Repositories).
 
-One of the key use cases for OpenWhisk is to execute logic, on demand, in response to records inserted or updated in a database. Instead of pre-provisioning resources in anticipation of demand, these actions are started and destroyed only as needed in response to demand.
+# Cloudant data processing with OpenWhisk
+The example shows how to write an action that inserts data into Cloudant and how to create another action to respond to that database change.
 
-Once you complete this sample application, you can move on to more complex serverless application use cases, such as those named _OpenWhisk 201_ or tagged as [_openwhisk-use-cases_](https://github.com/search?q=topic%3Aopenwhisk-use-cases+org%3AIBM&type=Repositories).
-
-# Overview of Cloudant data processing
-The sample demonstrates how to write an action that inserts data in to Cloudant and how to create a second action to respond to that data insertion event.
-
-It also shows how to use built-in actions, such as those provided by the `/whisk.system/cloudant` package along with your custom actions in a _sequence_ to chain units of logic.
+It also shows how to use built-in actions, such as those provided by the `/whisk.system/cloudant` package along with custom actions in a _sequence_ to link units of logic in a series.
 
 ![High level diagram](docs/data-processing-cloudant.png)
 
-# Installation
-Setting up this sample involves configuration of OpenWhisk and Cloudant on IBM Bluemix. [If you haven't already signed up for Bluemix and configured OpenWhisk, review those steps first](docs/OPENWHISK.md).
+Steps
 
-### Provision a Cloudant database
-Log into the Bluemix console, provision a Cloudant service instance, and name it `openwhisk-cloudant`. You can reuse an existing instance if you already have one.
+1. [Provision Cloudant](#1-provision-mysql)
+2. [Create OpenWhisk actions, triggers, and rules](#2-create-openwhisk-actions-triggers-and-rules)
+3. [Test database change events](#3-test-database-change-events)
+4. [Delete actions, triggers, and rules](#4-delete-actions-triggers-and-rules)
+5. [Recreate deployment manually](#5-recreate-deployment-manually)
 
-Copy `template.local.env` to a new file named `local.env` and update the `CLOUDANT_INSTANCE` value to reflect the name of the Cloudant service instance above.
+# 1. Provision Cloudant
+Log into Bluemix, provision a Cloudant database instance, and name it `openwhisk-cloudant`. Log into the Cloudant web console and create a database named `cats`.
 
-Then set the `CLOUDANT_USERNAME` and `CLOUDANT_PASSWORD` values based on the service credentials for the service.
+Copy `template.local.env` to a new file named `local.env` and update the `CLOUDANT_INSTANCE`, `CLOUDANT_DATABASE`, `CLOUDANT_USERNAME`, and `CLOUDANT_PASSWORD` for your instance.
 
-Log into the Cloudant web console and create a database, such as `cats`. Set the database name in the `CLOUDANT_DATABASE` variable.
-
-### Bind the Cloudant instance to OpenWhisk
-To make Cloudant available to OpenWhisk, we create a "package" along with connection information.
-
-```bash
-wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
-  --param username "$CLOUDANT_USERNAME" \
-  --param password "$CLOUDANT_PASSWORD" \
-  --param host "$CLOUDANT_USERNAME.cloudant.com" \
-  --param dbname "$CLOUDANT_DATABASE"
-```
-
-### Use the `deploy.sh` script to automate the steps above
-The commands above exist in a convenience script that reads the environment variables out of `local.env` and injects them where needed.
-
-Change to the root directory, and install the app using `deploy.sh`.
-
-> **Note**: `deploy.sh` will be replaced with the [`wskdeploy`](https://github.com/openwhisk/openwhisk-wskdeploy) tool in the future. `wskdeploy` uses a manifest to create the triggers, actions, and rules that power the sample.
+# 2. Create OpenWhisk actions, triggers, and rules
+`deploy.sh` is a convenience script reads the environment variables from `local.env` and creates the OpenWhisk actions, triggers, and rules on your behalf. Later you will run these commands yourself.
 
 ```bash
 ./deploy.sh --install
 ```
-## Testing
-To test, confirm that your Cloudant database is empty. Then invoke the first action manually.
+> **Note**: If you see any error messages, refer to the [Troubleshooting](#troubleshooting) section below.
 
-Open one terminal window to poll the logs:
+> **Note**: `deploy.sh` will be replaced with [`wskdeploy`](https://github.com/openwhisk/openwhisk-wskdeploy) in the future. `wskdeploy` uses a manifest to deploy declared triggers, actions, and rules to OpenWhisk.
+
+# 3. Test database change events
+To test, invoke the first action manually. Open one terminal window to poll the logs:
 ```bash
 wsk activation poll
 ```
@@ -64,11 +48,75 @@ And in a second terminal, invoke the action:
 wsk action invoke --blocking --result write-to-cloudant
 ```
 
-## Troubleshooting
-The first place to check for errors is the OpenWhisk activation log. You can view it by tailing the log on the command line with `wsk activation poll` or you can view the [monitoring console on Bluemix](https://console.ng.bluemix.net/openwhisk/dashboard).
+# 4. Delete actions, triggers, and rules
+Use `deploy.sh` again to tear down the OpenWhisk actions, triggers, and rules. You will recreate them step-by-step in the next section.
 
-## Cleaning up
-To remove all the API mappings and delete the actions, you can use `./deploy.sh --uninstall` or perform the deletions manually.
+```bash
+./deploy.sh --uninstall
+```
+
+# 5. Recreate deployment manually
+This section provides a deeper look into what the `deploy.sh` script executes so that you understand how to work with OpenWhisk triggers, actions, rules, and packages in more detail.
+
+## 5.1 Bind Cloudant package with credential parameters
+Make the Cloudant instance in Bluemix available as an event source.
+
+```bash
+wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
+  --param username "$CLOUDANT_USERNAME" \
+  --param password "$CLOUDANT_PASSWORD" \
+  --param host "$CLOUDANT_USERNAME.cloudant.com"
+```
+
+## 5.2 Create trigger to fire events when data is inserted
+Create a trigger named `image-uploaded` that subscribes to that Cloudant instance and specific database change events.
+
+```bash
+wsk trigger create image-uploaded \
+  --feed "/_/$CLOUDANT_INSTANCE/changes" \
+  --param dbname "$CLOUDANT_DATABASE"
+```
+
+## 5.3 Create action that is manually invoked to write to database
+Upload the action code named `write-to-cloudant` that inserts text and an image to Cloudant which will initiate a database change event.
+
+```bash
+wsk action create write-to-cloudant actions/write-to-cloudant.js \
+  --param CLOUDANT_USERNAME "$CLOUDANT_USERNAME" \
+  --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
+  --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
+```
+
+## 5.4 Create action to respond to database insertions
+Upload the action code named `write-from-cloudant` that will receive database change information and log it to the console.
+
+```bash
+wsk action create write-from-cloudant actions/write-from-cloudant.js
+```
+
+## 5.5 Create sequence that ties database read to handling action
+Specify a linkage between the built-in Cloudant `read` action and the custom `write-from-cloudant` above in a sequence named `write-from-cloudant-sequence`.
+
+```bash
+wsk action create write-from-cloudant-sequence \
+  --sequence /_/$CLOUDANT_INSTANCE/read,write-from-cloudant
+```
+
+## 5.6 Create rule that maps database change trigger to sequence
+Declare a rule named `echo-images` that maps the trigger `image-uploaded` to the action sequence `write-from-cloudant-sequence`. Without this mapping, the trigger will fire but no logic will be executed in response.
+
+```bash
+wsk rule create echo-images image-uploaded write-from-cloudant-sequence
+```
+
+
+# Troubleshooting
+Check for errors first in the OpenWhisk activation log. Tail the log on the command line with `wsk activation poll` or drill into details visually with the [monitoring console on Bluemix](https://console.ng.bluemix.net/openwhisk/dashboard).
+
+If the error is not immediately obvious, make sure you have the [latest version of the `wsk` CLI installed](https://console.ng.bluemix.net/openwhisk/learn/cli). If it's older than a few weeks, download an update.
+```bash
+wsk property get --cliversion
+```
 
 # License
-Licensed under the [Apache 2.0 license](LICENSE.txt).
+[Apache 2.0](LICENSE.txt)

@@ -41,14 +41,14 @@ function install() {
     --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
     --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
 
-  echo "Creating the action to respond to database insertions"
+  echo "Creating action to respond to database insertions"
   wsk action create write-from-cloudant actions/write-from-cloudant.js
 
-  echo "Creating the sequence that ties the database read to the handling action"
+  echo "Creating sequence that ties database read to handling action"
   wsk action create write-from-cloudant-sequence \
     --sequence /_/$CLOUDANT_INSTANCE/read,write-from-cloudant
 
-  echo "Creating the rule that maps the database change trigger to the sequence"
+  echo "Creating rule that maps database change trigger to sequence"
   wsk rule create echo-images image-uploaded write-from-cloudant-sequence
 
   echo "Install complete"
