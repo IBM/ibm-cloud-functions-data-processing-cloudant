@@ -16,7 +16,7 @@ It also shows how to use built-in actions, such as those provided by the `/whisk
 
 Steps
 
-1. [Provision Cloudant](#1-provision-mysql)
+1. [Provision Cloudant](#1-provision-cloudant)
 2. [Create OpenWhisk actions, triggers, and rules](#2-create-openwhisk-actions-triggers-and-rules)
 3. [Test database change events](#3-test-database-change-events)
 4. [Delete actions, triggers, and rules](#4-delete-actions-triggers-and-rules)
@@ -108,7 +108,6 @@ Declare a rule named `echo-images` that maps the trigger `image-uploaded` to the
 ```bash
 wsk rule create echo-images image-uploaded write-from-cloudant-sequence
 ```
-
 
 # Troubleshooting
 Check for errors first in the OpenWhisk activation log. Tail the log on the command line with `wsk activation poll` or drill into details visually with the [monitoring console on Bluemix](https://console.ng.bluemix.net/openwhisk/dashboard).
