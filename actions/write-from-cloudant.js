@@ -16,15 +16,12 @@
 
 
 /**
- * This action is fired in response to new data in the cloudant database. It echos the data to the console.
+ * This action is fired in response to new data in the Cloudant database.
+ * It echos the data to the console.
  *
  */
 function main(params) {
-
-  // Configure database connection
-
   console.log('[write-from-cloudant.main] Writing database changes to console');
   console.log(params);
   return params;
-
 }
