@@ -22,9 +22,6 @@ Steps
 4. [Delete actions, triggers, and rules](#4-delete-actions-triggers-and-rules)
 5. [Recreate deployment manually](#5-recreate-deployment-manually)
 
-# Prereqs
-[Create a (free) Bluemix Account and get the latest OpenWhisk command line tool](docs/OPENWHISK.md).
-
 # 1. Provision Cloudant
 Log into Bluemix, provision a Cloudant database instance, and name it `openwhisk-cloudant`. Log into the Cloudant web console and create a database named `cats`.
 
