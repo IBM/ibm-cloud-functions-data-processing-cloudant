@@ -3,7 +3,7 @@
 # OpenWhisk 101 - Cloudant Data Processing
 Learn how to [create Cloudant data processing apps](https://github.com/IBM/openwhisk-data-processing-cloudant/wiki) with Apache OpenWhisk on IBM Bluemix. This tutorial will take less than 10 minutes to complete.
 
-You should have a basic understanding of the OpenWhisk programming model. If not, [try the action, trigger, and rule demo first](https://github.com/IBM/openwhisk-action-trigger-rule). [You'll also need a Bluemix account and the latest OpenWhisk command line tool](docs/OPENWHISK.md).
+You should have a basic understanding of the OpenWhisk programming model. If not, [try the action, trigger, and rule demo first](https://github.com/IBM/openwhisk-action-trigger-rule). Also, [you'll need a Bluemix account and the latest OpenWhisk command line tool](docs/OPENWHISK.md).
 
 When complete, move on to more complex serverless applications, such as those named _OpenWhisk 201_ or tagged as [_openwhisk-use-cases_](https://github.com/search?q=topic%3Aopenwhisk-use-cases+org%3AIBM&type=Repositories).
 
@@ -21,6 +21,9 @@ Steps
 3. [Test database change events](#3-test-database-change-events)
 4. [Delete actions, triggers, and rules](#4-delete-actions-triggers-and-rules)
 5. [Recreate deployment manually](#5-recreate-deployment-manually)
+
+# Prereqs
+[Create a (free) Bluemix Account and get the latest OpenWhisk command line tool](docs/OPENWHISK.md).
 
 # 1. Provision Cloudant
 Log into Bluemix, provision a Cloudant database instance, and name it `openwhisk-cloudant`. Log into the Cloudant web console and create a database named `cats`.
@@ -107,6 +110,12 @@ Declare a rule named `echo-images` that maps the trigger `image-uploaded` to the
 
 ```bash
 wsk rule create echo-images image-uploaded write-from-cloudant-sequence
+```
+
+## 5.7 Test it again
+
+```bash
+wsk action invoke --blocking --result write-to-cloudant
 ```
 
 # Troubleshooting
