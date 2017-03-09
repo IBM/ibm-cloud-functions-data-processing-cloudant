@@ -23,7 +23,7 @@ Steps
 5. [Recreate deployment manually](#5-recreate-deployment-manually)
 
 # 1. Provision Cloudant
-Log into Bluemix, provision a Cloudant database instance, and name it `openwhisk-cloudant`. Log into the Cloudant web console and create a database named `cats`.
+Log into Bluemix, provision a [Cloudant database instance](https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db/), and name it `openwhisk-cloudant`. Log into the Cloudant web console and create a database named `cats`.
 
 Copy `template.local.env` to a new file named `local.env` and update the `CLOUDANT_INSTANCE`, `CLOUDANT_DATABASE`, `CLOUDANT_USERNAME`, and `CLOUDANT_PASSWORD` for your instance.
 
