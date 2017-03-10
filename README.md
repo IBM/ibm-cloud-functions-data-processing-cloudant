@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant.svg?branch=master)](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant)
 
-# OpenWhisk 101 - Cloudant Data Processing
-Learn how to [create Cloudant data processing apps](https://github.com/IBM/openwhisk-data-processing-cloudant/wiki) with Apache OpenWhisk on IBM Bluemix. This tutorial will take less than 10 minutes to complete.
+# OpenWhisk Hands On - Cloudant Data Processing
+Learn how to [create Cloudant data processing apps](https://github.com/IBM/openwhisk-data-processing-cloudant/wiki) with Apache OpenWhisk on IBM Bluemix. This tutorial will take about 10 minutes to complete.
 
 You should have a basic understanding of the OpenWhisk programming model. If not, [try the action, trigger, and rule demo first](https://github.com/IBM/openwhisk-action-trigger-rule). [You'll also need a Bluemix account and the latest OpenWhisk command line tool](docs/OPENWHISK.md).
 
