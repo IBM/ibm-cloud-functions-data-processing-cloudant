@@ -25,7 +25,7 @@ chmod u+x wsk
 export PATH=$PATH:`pwd`
 
 echo "Configuring CLI from apihost and API key\n"
-wsk property set --apihost openwhisk.ng.bluemix.net --auth $OPEN_WHISK_KEY #OPEN_WHISK_KEY defined in travis-ci console
+wsk property set --apihost openwhisk.ng.bluemix.net --auth $OPENWHISK_KEY > /dev/null 2>&1
 
 echo "Configure local.env"
 touch local.env #Configurations defined in travis-ci console
@@ -48,12 +48,12 @@ sleep 15
 echo "verifiy actions were triggered"
 LAST_ACTIVATION=`wsk activation list | head -2 | tail -1 | awk '{ print $1 }'`
 IBM_LOGO=`wsk activation result $LAST_ACTIVATION | jq -r '._id'`
-if [[ $IBM_LOGO == IBM_logo* ]] 
+if [[ $IBM_LOGO == IBM_logo* ]]
 then
 	echo "Found the image we were expecting"
 else
 	echo "Did not find the IBM_logo"
-	wsk activation list	
+	wsk activation list
 	echo "Uninstalling wsk actions, etc."
 	./deploy.sh --uninstall
 	exit -1
