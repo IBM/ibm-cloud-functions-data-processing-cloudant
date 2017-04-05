@@ -1,20 +1,26 @@
 [![Build Status](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant.svg?branch=master)](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant)
 
-# OpenWhisk Hands On - Cloudant Data Processing
-Learn how to [create Cloudant data processing apps](https://github.com/IBM/openwhisk-data-processing-cloudant/wiki) with Apache OpenWhisk on IBM Bluemix. This tutorial will take about 10 minutes to complete. For more background on the use case, check out [the developer story](https://developer.ibm.com/accelerate/journey/respond-database-changes/).
+# Cloudant data processing with OpenWhisk
+This project shows the power of serverless, event-driven architectures to execute code in response to database change events from Cloudant, thus extracting highly scalable and highly efficient analytics from both technologies.
+
+This application shows you two OpenWhisk actions (written in JavaScript) that write and read text and image data to Cloudant, a hosted Apache CouchDB service. The scenario demonstrates how actions can work with data services and execute logic in response to database changes.
+
+One action connects to Cloudant and inserts text and binary data as an attachment. The action is defined with package variables that provide it with Cloudant credentials as environment variables. This action is then uploaded to the OpenWhisk platform where it can be invoked manually to test.
+
+A second action responds to the changes that were inserted into Cloudant by the first action. Instead of being manually invoked, the developer defines a trigger and mapping rule that binds the action to the Cloudant database and responds to changes.
+
+![Sample Architecture](docs/arch_respondtodbchanges-1.png)
+
+## Included components
+
+- OpenWhisk
+- Cloudant (CouchDB)
+
+## Prerequisite
 
 You should have a basic understanding of the OpenWhisk programming model. If not, [try the action, trigger, and rule demo first](https://github.com/IBM/openwhisk-action-trigger-rule). Also, you'll need a Bluemix account and the latest [OpenWhisk command line tool (`wsk`) installed and on your PATH](https://github.com/IBM/openwhisk-action-trigger-rule/blob/master/docs/OPENWHISK.md).
 
-When complete, move on to more complex serverless applications, such as those named _OpenWhisk 201_ or tagged as [_openwhisk-use-cases_](https://github.com/search?q=topic%3Aopenwhisk-use-cases+org%3AIBM&type=Repositories).
-
-# Cloudant data processing with OpenWhisk
-The example shows how to write an action that inserts data into Cloudant and how to create another action to respond to that database change.
-
-It also shows how to use built-in actions, such as those provided by the `/whisk.system/cloudant` package along with custom actions in a _sequence_ to link units of logic in a series.
-
-![High level diagram](docs/data-processing-cloudant.png)
-
-Steps
+## Steps
 
 1. [Provision Cloudant](#1-provision-cloudant)
 2. [Create OpenWhisk actions, triggers, and rules](#2-create-openwhisk-actions-triggers-and-rules)
