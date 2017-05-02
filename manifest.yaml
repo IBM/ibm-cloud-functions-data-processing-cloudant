@@ -1,0 +1,61 @@
+# Manifest for openwhisk-data-processing-cloudant
+# Repo is located at https://github.com/IBM/openwhisk-data-processing-cloudant
+# Installing openwhisk actions, triggers, and rules for Cloudant sample
+
+# Deployment using this manifest file creates following OpenWhisk components:
+#   Package:    openwhisk-cloudant 
+#   Package:    data-processing
+#   Action:     data-processing/write-to-cloudant
+#   Action:     data-processing/write-from-cloudant
+#   Sequence:   data-processing/write-from-cloudant-sequence
+#   Trigger:    image-uploaded
+#   Rule:       echo-images
+
+# This manifest file expects following env. variables:
+#   CLOUDANT_HOST
+#   CLOUDANT_USERNAME
+#   CLOUDANT_PASSWORD
+#   CLOUDANT_DATABASE
+package:
+    name: data-processing 
+    namespace: _ 
+    dependencies:
+        # binding cloudant package named openwhisk-cloudant 
+        openwhisk-cloudant:
+            location: /whisk.system/cloudant
+            inputs:
+                username: $CLOUDANT_USERNAME 
+                password: $CLOUDANT_PASSWORD 
+                host: $CLOUDANT_HOST
+    triggers:
+        # Trigger named "image-uploaded"
+        # Creating trigger to fire events when data is inserted
+        image-uploaded:
+            source: openwhisk-cloudant/changes
+            inputs:
+                dbname: $CLOUDANT_DATABASE
+    actions:
+        # Action named "write-to-cloudant"
+        # Creating action that is manually invoked to write to the database
+        write-to-cloudant:
+            location:  actions/write-to-cloudant.js
+            inputs:
+                CLOUDANT_USERNAME: $CLOUDANT_USERNAME
+                CLOUDANT_PASSWORD: $CLOUDANT_PASSWORD
+                CLOUDANT_DATABASE: $CLOUDANT_DATABASE
+        # Action named "write-from-cloudant"
+        # Creating action to respond to database insertions
+        write-from-cloudant:
+            location: actions/write-from-cloudant.js
+
+    sequences:
+        # Sequence named "write-from-cloudant-sequence"
+        # Creating sequence that ties database read to handling action
+        write-from-cloudant-sequence:
+            actions: openwhisk-cloudant/read, write-from-cloudant
+    rules:
+        # Rule named "echo-images"
+        # Creating rule that maps database change trigger to sequence
+        echo-images:
+            trigger: image-uploaded
+            action: data-processing/write-from-cloudant-sequence
