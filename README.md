@@ -47,6 +47,10 @@ Copy `template.local.env` to a new file named `local.env` and update the `CLOUDA
 
 > **Note**: `deploy.sh` will be replaced with [`wskdeploy`](https://github.com/openwhisk/openwhisk-wskdeploy) in the future. `wskdeploy` uses a manifest to deploy declared triggers, actions, and rules to OpenWhisk.
 
+>  **Note**: You can also use the following button to deploy to Bluemix as part of a DevOps pipeline.
+
+[![Create BlueCompute Deployment Toolchain](https://console.ng.bluemix.net/devops/graphics/create_toolchain_button.png)](https://console.ng.bluemix.net/devops/setup/deploy?repository=https://github.com/IBM/openwhisk-data-processing-cloudant.git)
+
 # 3. Test database change events
 To test, invoke the first action manually. Open one terminal window to poll the logs:
 ```bash
