@@ -4,7 +4,7 @@ stages:
   inputs:
   - service: ${REPO}
     type: git
-    branch: master
+    branch: add_deploy_to_bluemix
     dir_name: null
   triggers:
   - type: commit

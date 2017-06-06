@@ -30,6 +30,10 @@ pipeline-cloudant-data-processing:
        NAME: "{{pipeline-cloudant-data-processing.parameters.name}}-{{deploy.parameters.deploy-space}}"
        OPENWHISK_API_ENDPOINT: "{{deploy.parameters.openwhisk-api-endpoint}}"
        OPENWHISK_AUTH_KEY: "{{deploy.parameters.openwhisk-auth-key}}"
+       CLOUDANT_INSTANCE: "{{deploy.parameters.cloudant-instance}}"
+       CLOUDANT_USERNAME: "{{deploy.parameters.cloudant-username}}"
+       CLOUDANT_PASSWORD: "{{deploy.parameters.cloudant-password}}"
+       CLOUDANT_DATABASE: "{{deploy.parameters.cloudant-database}}"
       execute: false
 
 deploy:
@@ -41,3 +45,7 @@ deploy:
     deploy-space: "{{space}}"
     openwhisk-api-endpoint: "openwhisk.ng.bluemix.net"
     openwhisk-auth-key: ""
+    cloudant-instance: ""
+    cloudant-username: ""
+    cloudant-password: ""
+    cloudant-database: ""

@@ -24,6 +24,22 @@
         "openwhisk-auth-key": {
             "description": "OpenWhisk authorization key: copy the authorization key from https://console.ng.bluemix.net/openwhisk/learn/cli",
             "type": "password"
+        },
+        "cloudant-instance": {
+            "description": "Cloudant service instance name, copy from Bluemix console",
+            "type": "string"
+        },
+        "cloudant-username": {
+            "description": "Cloudant name, copy from Bluemix console Cloudant instance credentials",
+            "type": "string"
+        },
+        "cloudant-password": {
+            "description": "Cloudant name, copy from Bluemix console Cloudant instance credentials",
+            "type": "password"
+        },
+        "cloudant-database": {
+            "description": "Cloudant database name, copy from Cloudant console",
+            "type": "string"
         }
     },
     "required": [
@@ -31,7 +47,11 @@
         "deploy-org",
         "deploy-space",
         "openwhisk-auth-key",
-        "openwhisk-api-endpoint"
+        "openwhisk-api-endpoint",
+        "cloudant-instance",
+        "cloudant-username",
+        "cloudant-password",
+        "cloudant-database"
     ],
     "form": [
         {
@@ -49,6 +69,30 @@
             "readonly": false,
             "title": "OpenWhisk Auth Key",
             "key": "openwhisk-auth-key"
+        },
+        {
+            "type": "text",
+            "readonly": false,
+            "title": "Cloudant Instance Name",
+            "key": "cloudant-instance"
+        },
+        {
+            "type": "text",
+            "readonly": false,
+            "title": "Cloudant User Name",
+            "key": "cloudant-username"
+        },
+        {
+            "type": "text",
+            "readonly": false,
+            "title": "Cloudant Password",
+            "key": "cloudant-password"
+        },
+        {
+            "type": "text",
+            "readonly": false,
+            "title": "Cloudant Database Name",
+            "key": "cloudant-database"
         },
         {
             "type": "table",
