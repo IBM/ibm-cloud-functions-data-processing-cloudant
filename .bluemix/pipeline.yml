@@ -1,0 +1,100 @@
+---
+stages:
+- name: Deploy
+  inputs:
+  - service: ${REPO}
+    type: git
+    branch: add_deploy_to_bluemix
+    dir_name: null
+  triggers:
+  - type: commit
+  properties:
+  - name: OPENWHISK_API_ENDPOINT
+    value: ${OPENWHISK_API_ENDPOINT}
+    type: text
+  - name: OPENWHISK_AUTH_KEY
+    value: ${OPENWHISK_AUTH_KEY}
+    type: secure
+  - name: CLOUDANT_INSTANCE
+    value: ${CLOUDANT_INSTANCE}
+    type: text
+  - name: CLOUDANT_USERNAME
+    value: ${CLOUDANT_USERNAME}
+    type: text
+  - name: CLOUDANT_DATABASE
+    value: ${CLOUDANT_DATABASE}
+    type: text
+  - name: CLOUDANT_PASSWORD
+    value: ${CLOUDANT_PASSWORD}
+    type: secure
+  jobs:
+  - name: Deploy
+    type: deployer
+    target:
+      region_id: ${REGION}
+      organization: ${ORG}
+      space: ${SPACE}
+      application: cloudantdataprocessing
+    script: |+
+      #!/bin/bash
+
+      set -x
+      # download openwhisk cli
+      if [ ! -f ./wsk ]; then
+          wget https://openwhisk.ng.bluemix.net/cli/go/download/linux/amd64/wsk
+          chmod u+x wsk
+      fi
+
+      # set up openwhisk cli
+      ./wsk property set --apihost ${OPENWHISK_API_ENDPOINT} --auth ${OPENWHISK_AUTH_KEY}
+
+      # download jq
+      if [ ! -f ./jq ]; then
+          wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
+          mv jq-linux64 jq
+          chmod u+x jq
+      fi
+
+      # create openwhisk package
+      ./wsk package refresh
+
+      set +e
+
+      echo "Binding package"
+      ./wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
+          --param username "$CLOUDANT_USERNAME" \
+          --param password "$CLOUDANT_PASSWORD" \
+          --param host "$CLOUDANT_USERNAME.cloudant.com"
+
+      echo "Creating write-from-cloudant ..."
+      ./wsk action get -s write-from-cloudant && \
+          ./wsk action update write-from-cloudant actions/write-from-cloudant.js
+
+      echo "Creating write-from-cloudant ..."
+      ./wsk action get -s write-to-cloudant && \
+          ./wsk action update write-to-cloudant actions/write-to-cloudant.js \
+              --param CLOUDANT_USERNAME "$CLOUDANT_USERNAME" \
+              --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
+              --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
+
+      echo "Creating write-from-cloudant-sequence ..."
+      ./wsk action get -s write-from-cloudant-sequence && \
+          ./wsk action update write-from-cloudant-sequence \
+              --sequence /_/$CLOUDANT_INSTANCE/read,write-from-cloudant
+
+      cloudant_package=`./wsk package list | grep "${cloudant_svc_key_name}" | awk '{print $1;}'`
+      echo "Creating trigger reviewTrigger for feed ${cloudant_package}/changes on db socialreviewdb ..."
+      ./wsk trigger get -s image-uploaded || \
+          ./wsk trigger create image-uploaded \
+              --feed "/_/$CLOUDANT_INSTANCE/changes" \
+              --param dbname "$CLOUDANT_DATABASE"
+
+      echo "Creating rule handleReviewPosted on reviewTrigger ..."
+      ./wsk rule get -s echo-images || \
+          ./wsk rule create echo-images image-uploaded write-from-cloudant-sequence
+
+hooks:
+- enabled: true
+  label: null
+  ssl_enabled: false
+  url: https://devops-api.ng.bluemix.net/v1/messaging/webhook/publish
