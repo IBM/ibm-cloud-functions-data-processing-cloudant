@@ -43,13 +43,7 @@ Copy `template.local.env` to a new file named `local.env` and update the `CLOUDA
 ```bash
 ./deploy.sh --install
 ```
-> **Note**: If you see any error messages, refer to the [Troubleshooting](#troubleshooting) section below.
-
-> **Note**: `deploy.sh` will be replaced with [`wskdeploy`](https://github.com/openwhisk/openwhisk-wskdeploy) in the future. `wskdeploy` uses a manifest to deploy declared triggers, actions, and rules to OpenWhisk.
-
->  **Note**: You can also use the following button to clone a copy of this repository and deploy to Bluemix as part of a DevOps toolchain. Supply your OpenWhisk and Cloudant credentials, click Create, then run the Deployment pipeline.
-
-[![Deploy to Bluemix](https://bluemix.net/docs/api/content/develop/images/deploy_buttonx2.png)](https://bluemix.net/deploy?repository=https://github.com/IBM/openwhisk-data-processing-cloudant.git)
+> **Note**: If you see any error messages, refer to the [Troubleshooting](#troubleshooting) section below. You can also explore [Alternative deployment methods](#alternative-deployment-methods).
 
 # 3. Test database change events
 To test, invoke the first action manually. Open one terminal window to poll the logs:
@@ -136,6 +130,13 @@ If the error is not immediately obvious, make sure you have the [latest version 
 ```bash
 wsk property get --cliversion
 ```
+
+# Alternative deployment methods
+`deploy.sh` will be replaced with [`wskdeploy`](https://github.com/openwhisk/openwhisk-wskdeploy) in the future. `wskdeploy` uses a manifest to deploy declared triggers, actions, and rules to OpenWhisk.
+
+You can also use the following button to clone a copy of this repository and deploy to Bluemix as part of a DevOps toolchain. Supply your OpenWhisk and Cloudant credentials under the Delivery Pipeline icon, click Create, then run the Deploy stage for the Delivery Pipeline.
+
+[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/IBM/openwhisk-data-processing-cloudant.git)
 
 # License
 [Apache 2.0](LICENSE.txt)
