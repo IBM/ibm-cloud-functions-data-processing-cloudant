@@ -68,11 +68,11 @@ stages:
 
       echo "Creating write-from-cloudant ..."
       ./wsk action get -s write-from-cloudant && \
-          ./wsk action update write-from-cloudant actions/write-from-cloudant.js
+          ./wsk action update write-from-cloudant ../actions/write-from-cloudant.js
 
       echo "Creating write-from-cloudant ..."
       ./wsk action get -s write-to-cloudant && \
-          ./wsk action update write-to-cloudant actions/write-to-cloudant.js \
+          ./wsk action update write-to-cloudant ../actions/write-to-cloudant.js \
               --param CLOUDANT_USERNAME "$CLOUDANT_USERNAME" \
               --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
               --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
@@ -83,13 +83,13 @@ stages:
               --sequence /_/$CLOUDANT_INSTANCE/read,write-from-cloudant
 
       cloudant_package=`./wsk package list | grep "${cloudant_svc_key_name}" | awk '{print $1;}'`
-      echo "Creating trigger reviewTrigger for feed ${cloudant_package}/changes on db socialreviewdb ..."
+      echo "Creating trigger image-uploaded for feed ${cloudant_package}/changes on db $CLOUDANT_DATABASE ..."
       ./wsk trigger get -s image-uploaded || \
           ./wsk trigger create image-uploaded \
               --feed "/_/$CLOUDANT_INSTANCE/changes" \
               --param dbname "$CLOUDANT_DATABASE"
 
-      echo "Creating rule handleReviewPosted on reviewTrigger ..."
+      echo "Creating rule echo-images on image-uploaded ..."
       ./wsk rule get -s echo-images || \
           ./wsk rule create echo-images image-uploaded write-from-cloudant-sequence
 
