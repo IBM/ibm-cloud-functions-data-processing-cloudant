@@ -64,7 +64,7 @@ function main(params) {
           imageName,
           function(err, body) {
             if (err && err.statusCode != 409) {
-              console.log("Error with file insert.");
+              console.log("Error with file insert." + err);
               reject();
             } else {
               console.log("Success with file insert.");
