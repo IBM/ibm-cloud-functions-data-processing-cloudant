@@ -70,11 +70,11 @@ stages:
 
       echo "Creating write-from-cloudant ..."
       ./wsk action get -s write-from-cloudant || \
-      ./wsk action update write-from-cloudant ../actions/write-from-cloudant.js
+      ./wsk action create write-from-cloudant actions/write-from-cloudant.js
 
       echo "Creating write-from-cloudant ..."
       ./wsk action get -s write-to-cloudant || \
-      ./wsk action update write-to-cloudant ../actions/write-to-cloudant.js \
+      ./wsk action create write-to-cloudant actions/write-to-cloudant.js \
           --param CLOUDANT_USERNAME "$CLOUDANT_USERNAME" \
           --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
           --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
