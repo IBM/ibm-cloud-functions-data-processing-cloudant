@@ -48,13 +48,6 @@ stages:
       # set up openwhisk cli
       ./wsk property set --apihost ${OPENWHISK_API_ENDPOINT} --auth ${OPENWHISK_AUTH_KEY}
 
-      # download jq
-      if [ ! -f ./jq ]; then
-          wget https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64
-          mv jq-linux64 jq
-          chmod u+x jq
-      fi
-
       # create openwhisk package
       ./wsk package refresh
 
