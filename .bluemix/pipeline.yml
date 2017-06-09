@@ -54,14 +54,14 @@ stages:
       set +e
 
       echo "Creating a clean deployment"
-      wsk rule disable echo-images
+      ./wsk rule disable echo-images
       sleep 1
-      wsk rule delete echo-images
-      wsk trigger delete image-uploaded
-      wsk action delete write-to-cloudant
-      wsk action delete write-from-cloudant
-      wsk action delete write-from-cloudant-sequence
-      wsk package delete "$CLOUDANT_INSTANCE"
+      ./wsk rule delete echo-images
+      ./wsk trigger delete image-uploaded
+      ./wsk action delete write-to-cloudant
+      ./wsk action delete write-from-cloudant
+      ./wsk action delete write-from-cloudant-sequence
+      ./wsk package delete "$CLOUDANT_INSTANCE"
       sleep 1
 
       echo "Binding package"
@@ -90,6 +90,9 @@ stages:
 
       echo "Creating rule echo-images on image-uploaded ..."
       ./wsk rule create echo-images image-uploaded write-from-cloudant-sequence
+
+      echo "Test that everything is working ..."
+      ./wsk action invoke --blocking --result write-to-cloudant
 
 hooks:
 - enabled: true
