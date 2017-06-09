@@ -59,6 +59,8 @@ stages:
       ./wsk package refresh
 
       set +e
+      pwd
+      ls -Flat
 
       echo "Binding package"
       ./wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
@@ -67,31 +69,30 @@ stages:
           --param host "$CLOUDANT_USERNAME.cloudant.com"
 
       echo "Creating write-from-cloudant ..."
-      ./wsk action get -s write-from-cloudant && \
-          ./wsk action update write-from-cloudant ../actions/write-from-cloudant.js
+      ./wsk action get -s write-from-cloudant || \
+      ./wsk action update write-from-cloudant ../actions/write-from-cloudant.js
 
       echo "Creating write-from-cloudant ..."
-      ./wsk action get -s write-to-cloudant && \
-          ./wsk action update write-to-cloudant ../actions/write-to-cloudant.js \
-              --param CLOUDANT_USERNAME "$CLOUDANT_USERNAME" \
-              --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
-              --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
+      ./wsk action get -s write-to-cloudant || \
+      ./wsk action update write-to-cloudant ../actions/write-to-cloudant.js \
+          --param CLOUDANT_USERNAME "$CLOUDANT_USERNAME" \
+          --param CLOUDANT_PASSWORD "$CLOUDANT_PASSWORD" \
+          --param CLOUDANT_DATABASE "$CLOUDANT_DATABASE"
 
       echo "Creating write-from-cloudant-sequence ..."
-      ./wsk action get -s write-from-cloudant-sequence && \
-          ./wsk action update write-from-cloudant-sequence \
-              --sequence /_/$CLOUDANT_INSTANCE/read,write-from-cloudant
+      ./wsk action get -s write-from-cloudant-sequence || \
+      ./wsk action update write-from-cloudant-sequence \
+          --sequence /_/$CLOUDANT_INSTANCE/read,write-from-cloudant
 
-      cloudant_package=`./wsk package list | grep "${cloudant_svc_key_name}" | awk '{print $1;}'`
-      echo "Creating trigger image-uploaded for feed ${cloudant_package}/changes on db $CLOUDANT_DATABASE ..."
+      echo "Creating trigger image-uploaded for feed $CLOUDANT_INSTANCE/changes on db $CLOUDANT_DATABASE ..."
       ./wsk trigger get -s image-uploaded || \
-          ./wsk trigger create image-uploaded \
-              --feed "/_/$CLOUDANT_INSTANCE/changes" \
-              --param dbname "$CLOUDANT_DATABASE"
+      ./wsk trigger create image-uploaded \
+          --feed "/_/$CLOUDANT_INSTANCE/changes" \
+          --param dbname "$CLOUDANT_DATABASE"
 
       echo "Creating rule echo-images on image-uploaded ..."
       ./wsk rule get -s echo-images || \
-          ./wsk rule create echo-images image-uploaded write-from-cloudant-sequence
+      ./wsk rule create echo-images image-uploaded write-from-cloudant-sequence
 
 hooks:
 - enabled: true
