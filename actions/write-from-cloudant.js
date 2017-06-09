@@ -17,7 +17,7 @@
 
 /**
  * This action is fired in response to new data in the Cloudant database.
- * It echos the data to the console.
+ * It echos the data received about the change to the console.
  */
 function main(params) {
   console.log('[write-from-cloudant.main] Writing database changes to console');
