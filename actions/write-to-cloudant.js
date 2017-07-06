@@ -48,6 +48,7 @@ function main(params) {
     request({
       uri: LOGO_URL,
       method: 'GET',
+      encoding: null
     }, function(err, response, body) {
       if (err) {
         reject();
