@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant.svg?branch=master)](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant)
 
 # Cloudant data processing with OpenWhisk
-This project shows how serverless, event-driven architectures can be used to execute code in response to database change events from Cloudant, thus extracting highly scalable and highly efficient analytics from both technologies.
+This project shows how serverless, event-driven architectures can be used to execute code in response to database change events from Cloudant, thus extracting scalable and efficient analytics from both technologies.
 
 This application shows you two OpenWhisk actions (written in JavaScript) that write and read text and image data to Cloudant, a hosted Apache CouchDB service. The scenario demonstrates how actions can work with data services and execute logic in response to database changes.
 
