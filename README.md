@@ -37,7 +37,7 @@ Log into Bluemix, provision a [Cloudant database instance](https://console.ng.bl
 
 Copy `template.local.env` to a new file named `local.env` and update the `CLOUDANT_INSTANCE`, `CLOUDANT_DATABASE`, `CLOUDANT_USERNAME`, and `CLOUDANT_PASSWORD` for your instance.
 
-> **Note**: The Cloudant service credentials and connectivity details can be automatically bound to the OpenWhisk context with `wsk package refresh`, as they are in the [simpler version of this app](ttps://github.com/IBM/openwhisk-cloudant-trigger). However, since we are writing more than a simple JSON object back to Cloudant, we will use the Cloudant NPM client directly with the credentials, rather than through the Cloudant packaged write action.
+> **Note**: The Cloudant service credentials and connectivity details can be automatically bound to the OpenWhisk context with `wsk package refresh`, as they are in the [simpler version of this app](https://github.com/IBM/openwhisk-cloudant-trigger). However, since we are writing more than a simple JSON object back to Cloudant, we will use the Cloudant NPM client directly with the credentials, rather than through the Cloudant packaged write action.
 
 # 2. Create OpenWhisk actions, triggers, and rules
 `deploy.sh` is a convenience script reads the environment variables from `local.env` and creates the OpenWhisk actions, triggers, and rules on your behalf. Later you will run these commands yourself.
