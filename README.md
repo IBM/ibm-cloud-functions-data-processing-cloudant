@@ -1,9 +1,9 @@
 [![Build Status](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant.svg?branch=master)](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant)
 
-# Cloudant data processing with OpenWhisk
+# Cloudant data processing with IBM Cloud Functions (powered by Apache OpenWhisk)
 This project shows how serverless, event-driven architectures can be used to execute code in response to database change events from Cloudant, thus extracting scalable and efficient analytics from both technologies.
 
-This application shows you two OpenWhisk actions (written in JavaScript) that write and read text and image data to Cloudant, a hosted Apache CouchDB service. The scenario demonstrates how actions can work with data services and execute logic in response to database changes.
+This application shows you two IBM Cloud Functions (powered by Apache OpenWhisk) actions (written in JavaScript) that write and read text and image data to Cloudant, a hosted Apache CouchDB service. The scenario demonstrates how actions can work with data services and execute logic in response to database changes.
 
 One action connects to Cloudant and inserts text and binary data as an attachment. The action is defined with package variables that provide it with Cloudant credentials as environment variables. This action is then uploaded to the OpenWhisk platform where it can be invoked manually to test.
 
@@ -13,14 +13,14 @@ A second action responds to the changes that were inserted into Cloudant by the 
 
 ## Included components
 
-- OpenWhisk
+- IBM Cloud Functions powered by Apache OpenWhisk
 - Cloudant (CouchDB)
 
 ## Prerequisite
 
 You should have a basic understanding of the OpenWhisk programming model. If not, [try the action, trigger, and rule demo first](https://github.com/IBM/openwhisk-action-trigger-rule).
 
-Also, you'll need a Bluemix account and the latest [OpenWhisk command line tool (`wsk`) installed and on your PATH](https://github.com/IBM/openwhisk-action-trigger-rule/blob/master/docs/OPENWHISK.md).
+Also, you'll need an IBM Cloud account and the latest [OpenWhisk command line tool (`wsk`) installed and on your PATH](https://github.com/IBM/openwhisk-action-trigger-rule/blob/master/docs/OPENWHISK.md).
 
 As an alternative to this end-to-end example, you might also consider the more [basic "building block" version](https://github.com/IBM/openwhisk-cloudant-trigger) of this sample.
 
@@ -33,7 +33,7 @@ As an alternative to this end-to-end example, you might also consider the more [
 5. [Recreate deployment manually](#5-recreate-deployment-manually)
 
 # 1. Provision Cloudant
-Log into Bluemix, provision a [Cloudant database instance](https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db/), and name it `openwhisk-cloudant`. Log into the Cloudant web console and create a database named `cats`.
+Log into the IBM Cloud, provision a [Cloudant database instance](https://console.ng.bluemix.net/catalog/services/cloudant-nosql-db/), and name it `openwhisk-cloudant`. Log into the Cloudant web console and create a database named `cats`.
 
 Copy `template.local.env` to a new file named `local.env` and update the `CLOUDANT_INSTANCE`, `CLOUDANT_DATABASE`, `CLOUDANT_USERNAME`, and `CLOUDANT_PASSWORD` for your instance.
 
@@ -69,7 +69,7 @@ Use `deploy.sh` again to tear down the OpenWhisk actions, triggers, and rules. Y
 This section provides a deeper look into what the `deploy.sh` script executes so that you understand how to work with OpenWhisk triggers, actions, rules, and packages in more detail.
 
 ## 5.1 Bind Cloudant package with credential parameters
-Make the Cloudant instance in Bluemix available as an event source.
+Make the Cloudant instance on the IBM Cloud available as an event source.
 
 ```bash
 wsk package bind /whisk.system/cloudant "$CLOUDANT_INSTANCE" \
@@ -126,7 +126,7 @@ wsk action invoke --blocking --result write-to-cloudant
 ```
 
 # Troubleshooting
-Check for errors first in the OpenWhisk activation log. Tail the log on the command line with `wsk activation poll` or drill into details visually with the [monitoring console on Bluemix](https://console.ng.bluemix.net/openwhisk/dashboard).
+Check for errors first in the OpenWhisk activation log. Tail the log on the command line with `wsk activation poll` or drill into details visually with the [monitoring console on the IBM Cloud](https://console.ng.bluemix.net/openwhisk/dashboard).
 
 If the error is not immediately obvious, make sure you have the [latest version of the `wsk` CLI installed](https://console.ng.bluemix.net/openwhisk/learn/cli). If it's older than a few weeks, download an update.
 ```bash
@@ -136,9 +136,9 @@ wsk property get --cliversion
 # Alternative deployment methods
 `deploy.sh` will be replaced with [`wskdeploy`](https://github.com/openwhisk/openwhisk-wskdeploy) in the future. `wskdeploy` uses a manifest to deploy declared triggers, actions, and rules to OpenWhisk.
 
-You can also use the following button to clone a copy of this repository and deploy to Bluemix as part of a DevOps toolchain. Supply your OpenWhisk and Cloudant credentials under the Delivery Pipeline icon, click Create, then run the Deploy stage for the Delivery Pipeline.
+You can also use the following button to clone a copy of this repository and deploy to the IBM Cloud as part of a DevOps toolchain. Supply your OpenWhisk and Cloudant credentials under the Delivery Pipeline icon, click Create, then run the Deploy stage for the Delivery Pipeline.
 
-[![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/IBM/openwhisk-data-processing-cloudant.git)
+[![Deploy to the IBM Cloud](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/IBM/openwhisk-data-processing-cloudant.git)
 
 # License
 [Apache 2.0](LICENSE.txt)
