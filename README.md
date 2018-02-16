@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant.svg?branch=master)](https://travis-ci.org/IBM/openwhisk-data-processing-cloudant)
+[![Build Status](https://travis-ci.org/IBM/ibm-cloud-functions-data-processing-cloudant.svg?branch=master)](https://travis-ci.org/IBM/ibm-cloud-functions-data-processing-cloudant)
 
 # Cloudant data processing with IBM Cloud Functions (powered by Apache OpenWhisk)
 This project shows how serverless, event-driven architectures can be used to execute code in response to database change events from Cloudant, thus extracting scalable and efficient analytics from both technologies.
