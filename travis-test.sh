@@ -30,8 +30,8 @@ wsk property set --apihost openwhisk.ng.bluemix.net --auth $OPEN_WHISK_KEY > /de
 echo "Configure local.env"
 touch local.env #Configurations defined in travis-ci console
 
-echo "installing jq for bash json parsing"
-sudo apt-get install jq
+# echo "installing jq for bash json parsing"
+# sudo apt-get install jq
 
 echo "Deploying wsk actions, etc."
 ./deploy.sh --install
